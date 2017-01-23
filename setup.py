@@ -7,6 +7,6 @@ setup(
     zip_safe=False,
     entry_points={
         'console_scripts': [
-            'smith = smith.smith.cli:cli']
+            'smith = smith.cli:cli']
     },
 )
