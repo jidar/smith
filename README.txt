@@ -1,6 +1,8 @@
-smith -h
-========
+# smith
+A client/server style agent meant for testing connectivity to and from a machine on a network.
 
+```bash
+$: smith -h
 usage: smith [-h] ping, listen ...
 
 positional arguments:
@@ -8,12 +10,11 @@ positional arguments:
 
 optional arguments:
   -h, --help    show this help message and exit
-  
-
-smith ping
-=============
-Example:
-  smith ping 12345 127.0.0.1 REST --timeout 10
+```
+---
+## ping
+```bash
+$: smith ping -h
 
 usage: 
   Initiate a port-specific ping against a listening agent
@@ -30,13 +31,16 @@ optional arguments:
   -t TIMEOUT, --timeout TIMEOUT
                         Seconds to wait for response from server before giving
                         up. Zero means 'wait forever'
+```
+### Example
+```bash
+$: smith ping 12345 127.0.0.1 REST --timeout 10
+```
+---
 
-
-smith listen
-================
-Example:
-  smith listen 12345 REST
-
+## listen
+```bash
+$: smith listen -h
 usage: 
  Server-side: listen for incoming ping requests from remote client.
 
@@ -47,3 +51,9 @@ positional arguments:
 
 optional arguments:
   -h, --help      show this help message and exit
+```
+
+### Example
+```bash
+$: smith ping 12345 127.0.0.1 REST --timeout 10
+```
