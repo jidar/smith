@@ -10,8 +10,10 @@ optional arguments:
   -h, --help    show this help message and exit
   
 
-smith ping -h
+smith ping
 =============
+Example:
+  smith ping 12345 127.0.0.1 REST --timeout 10
 
 usage: 
   Initiate a port-specific ping against a listening agent
@@ -30,8 +32,10 @@ optional arguments:
                         up. Zero means 'wait forever'
 
 
-smith listen  -h
+smith listen
 ================
+Example:
+  smith listen 12345 REST
 
 usage: 
  Server-side: listen for incoming ping requests from remote client.
