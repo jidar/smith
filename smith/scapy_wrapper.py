@@ -1,8 +1,8 @@
 from scapy.all import *
 
 class CONST(object):
-    initiator_string = "<<INIT PACKET>>"
-    responder_string = "<<RESP PACKET>>"
+    initiator_string = "INIT PACKET"
+    responder_string = "RESP PACKET"
 
 class Reactions(object):
 
@@ -39,7 +39,6 @@ class Reactions(object):
         # send it back to the originator of this packet
 
         if not packet.payload.load == CONST.initiator_string:
-            "No initiator string, exiting"
             return
 
         src=None
@@ -49,10 +48,7 @@ class Reactions(object):
         if 'IP' in packet:
             src=packet['IP'].src
             dst=packet['IP'].dst
-        if 'TCP' in packet:
-            sport=packet['TCP'].sport
-            dport=packet['TCP'].dport
-        elif 'UDP' in packet:
+        if 'UDP' in packet:
             sport=packet['UDP'].sport
             dport=packet['UDP'].dport
 
@@ -65,7 +61,7 @@ class Reactions(object):
     def return_printable(packet):
         # For testing and debug purposes.  Eventually, I plan to add more
         # methods for doing stuff other than just returning the packet,
-        # including possible chaining reaction methods.
+        # including possibly chaining reaction methods.
         return "Packet {0} ==> {1}: {2}".format(
             packet[0][1].src, packet[0][1].dst, packet.payload.load)
 
@@ -77,14 +73,14 @@ def send_and_listen(
         timeout=0):
 
     resp = None
-    if protocol == 'TCP':
+    if protocol == 'tcp':
         resp = sr(
             IP(dst=destination_ip)
             /TCP(dport=destination_port)
             /Raw(load=CONST.initiator_string),
             timeout=timeout
         )
-    elif protocol == 'UDP':
+    elif protocol == 'udp':
         resp = sr(
             IP(dst=destination_ip)
             /UDP(dport=destination_port)
@@ -111,14 +107,12 @@ def listen(
     default bpf is 'ip dst port {port}'
     """
 
-    bpf = (
-        bpf_override
-        or "{interface} {protocol} {port}".format(
-            interface = interface or "",
-            protocol=protocol or "",
-            port="dst port {0}".format(port)
-            )
-        )
+    interface_str = "on {0}".format(interface) if interface else ""
+    proto_str = "{0}".format(protocol) if protocol else ""
+    port_str = "dst port {0}".format(port) if port else ""
+    bpf = "{interface} {protocol} {port}".format(
+            interface = interface_str, protocol=proto_str, port=port_str)
+    bpf = bpf_override if bpf_override else bpf
     bpf = bpf.strip()
 
     # Setup sniff, filtering for IP traffic
