@@ -1,6 +1,7 @@
 import argparse
+from smith import api
 
-PROTOCOLS = ['udp', 'tcp', 'rest']
+
 class Command(object):
     def __init__(self, args):
         self.args = args
@@ -9,47 +10,21 @@ class Command(object):
     def run(self):
         raise NotImplemented
 
-class ping_remote_agent(Command):
+
+class smith_ping(Command):
     def run(self):
-        if self.args.protocol == "rest":
-            import wsgiref_wrapper
-            r = wsgiref_wrapper.get_and_check(
+        r = api.ping(
+                self.args.port,
                 self.args.destination,
-                self.args.port)
-            print "success" if r else "failure"
-        else:
-            import scapy_wrapper
-            resp = scapy_wrapper.send_and_listen(
-                destination_ip=self.args.destination,
-                destination_port=self.args.port,
-                protocol=self.args.protocol,
-                timeout=self.args.timeout)
+                self.args.protocol,
+                self.args.timeout)
+        print 'success' if r else 'failure'
+        exit(0 if r else 1)
 
-class init_server_agent(Command):
+
+class smith_listen(Command):
     def run(self):
-        import scapy_wrapper
-        reaction = None
-
-        #This is a temp hack, i'm going to build a dispatcher with more methods,
-        #and also a real respond method instead of the protocol specific one.
-        if self.args.protocol == 'tcp':
-            import scapy_wrapper
-            scapy_wrapper.listen(
-                port=self.args.port,
-                protocol=self.args.protocol,
-                reaction=scapy_wrapper.Reactions.respond_tcp)
-        elif self.args.protocol == 'udp':
-            import scapy_wrapper
-            scapy_wrapper.listen(
-                port=self.args.port,
-                protocol=self.args.protocol,
-                reaction=scapy_wrapper.Reactions.respond_udp)
-        elif self.args.protocol == 'rest':
-            import wsgiref_wrapper
-            wsgiref_wrapper.start_server(self.args.port)
-        else:
-            print "Unsupported protocol type"
-            exit()
+        api.listen(self.args.port, self.args.protocol)
 
 
 def cli():
@@ -65,13 +40,13 @@ def cli():
     ping_parser.add_argument(
         "protocol",
         type=str,
-        choices=PROTOCOLS,
+        choices=api.PROTOCOLS,
         help="Protocol to use to contact the remote agent.  TCP and UDP use raw "
              "sockets which will bypass IPTABLES rules.",
     )
     ping_parser.add_argument(
         '-t', '--timeout', default=10, type=int, help="Seconds to wait for response from server before giving up. Zero means 'wait forever'")
-    ping_parser.set_defaults(func=ping_remote_agent)
+    ping_parser.set_defaults(func=smith_ping)
 
     listen_parser = subparsers.add_parser(
         "listen", usage="\n Server-side: listen for incoming ping requests from remote client.")
@@ -80,11 +55,11 @@ def cli():
     listen_parser.add_argument(
         "protocol",
         type=str,
-        choices=PROTOCOLS,
+        choices=api.PROTOCOLS,
         help=(
             "Protocol to use to contact the remote agent."
              "TCP and UDP use raw sockets which will bypass IPTABLES rules."))
-    listen_parser.set_defaults(func=init_server_agent)
+    listen_parser.set_defaults(func=smith_listen)
 
     args = parser.parse_args()
     args.func(args)
