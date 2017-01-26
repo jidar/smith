@@ -1,17 +1,17 @@
 # smith
 A client/server style agent meant for testing connectivity to and from a machine on a network.
 
-```bash
-$: smith -h
-usage: smith [-h] ping, listen ...
+## Installation
+```python setup.py install``` or ```pip install .``` should install smith.
+Note: If you want to use the tcp/udp protocol options, you'll need to install scapy and it's dependencies.
+Ubuntu has 'apt-get install python-scapy'.  You can also pip install scapy, but I don't know if that
+installs all dependencies on all OS's.  I didn't include scapy in the requires because the 'rest' option
+doesn't utilize it, and is sufficient for a lot of usecases on its own.
 
-positional arguments:
-  ping, listen
+--
 
-optional arguments:
-  -h, --help    show this help message and exit
-```
----
+## Functions: ping and listen
+
 ## ping
 ```bash
 $: smith ping -h
