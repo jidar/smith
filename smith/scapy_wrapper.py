@@ -100,6 +100,7 @@ def listen(
         protocol=None,
         interface=None,
         reaction=None,
+        timeout=None,
         bpf_override=None):
     """
     bpf_override is a string that adheres to the Berkeley Packet Filter syntax
@@ -117,4 +118,4 @@ def listen(
 
     # Setup sniff, filtering for IP traffic
     # example: scapy_all.sniff(filter="ip",prn=customAction)
-    sniff(filter=bpf, prn=reaction)
+    sniff(filter=bpf, prn=reaction, timeout=timeout)

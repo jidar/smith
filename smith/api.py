@@ -23,21 +23,23 @@ def ping(port, destination, protocol, timeout=10):
             return False
 
 
-def listen(port, protocol):
+def listen(port, protocol, timeout=None):
     if protocol == 'tcp':
         import scapy_wrapper
         scapy_wrapper.listen(
             port=port,
             protocol=protocol,
-            reaction=scapy_wrapper.Reactions.respond_tcp)
+            reaction=scapy_wrapper.Reactions.respond_tcp,
+            timeout=timeout)
     elif protocol == 'udp':
         import scapy_wrapper
         scapy_wrapper.listen(
             port=port,
             protocol=protocol,
-            reaction=scapy_wrapper.Reactions.respond_udp)
+            reaction=scapy_wrapper.Reactions.respond_udp,
+            timeout=timeout)
     elif protocol == 'rest':
         import wsgiref_wrapper
-        wsgiref_wrapper.start_server(port)
+        wsgiref_wrapper.start_server(port, timeout=timeout)
     else:
         raise Exception("Unsupported protocol type")

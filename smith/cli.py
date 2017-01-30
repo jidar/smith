@@ -24,13 +24,17 @@ class smith_ping(Command):
 
 class smith_listen(Command):
     def run(self):
-        api.listen(self.args.port, self.args.protocol)
+        api.listen(
+            self.args.port,
+            self.args.protocol,
+            timeout=self.args.timeout)
 
 
 def cli():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(metavar="ping, listen")
 
+    # Set up ping command args
     ping_parser = subparsers.add_parser(
         "ping", usage="\n  Initiate a port-specific ping against a listening agent")
     ping_parser.add_argument(
@@ -48,6 +52,7 @@ def cli():
         '-t', '--timeout', default=10, type=int, help="Seconds to wait for response from server before giving up. Zero means 'wait forever'")
     ping_parser.set_defaults(func=smith_ping)
 
+    # Set up listen command args
     listen_parser = subparsers.add_parser(
         "listen", usage="\n Server-side: listen for incoming ping requests from remote client.")
     listen_parser.add_argument(
@@ -59,6 +64,8 @@ def cli():
         help=(
             "Protocol to use to contact the remote agent."
              "TCP and UDP use raw sockets which will bypass IPTABLES rules."))
+    listen_parser.add_argument(
+        '-t', '--timeout', default=0, type=int, help="Seconds to wait for request from client before giving up. Zero means 'wait forever'")
     listen_parser.set_defaults(func=smith_listen)
 
     args = parser.parse_args()
