@@ -1,6 +1,10 @@
 from scapy.all import *
 
 class CONST(object):
+    """
+    These strings serve as the known payloads for the packets the client and server will send
+    eachother.
+    """
     initiator_string = "INIT PACKET"
     responder_string = "RESP PACKET"
 
@@ -8,8 +12,12 @@ class Reactions(object):
 
     @staticmethod
     def respond_tcp(packet):
-        # create a packet
-        # send it back to the originator of this packet
+        """
+        If a TCP initiator packet is detected, create and send a TCP response packet to the
+        originator of the initiator packet at the originating port.
+
+        A TCP initiator packet is denoted by the initiator_string being it's only payload
+        """
 
         if not packet.payload.load == CONST.initiator_string:
             return
@@ -35,6 +43,12 @@ class Reactions(object):
 
     @staticmethod
     def respond_udp(packet):
+        """
+        If a UDP initiator packet is detected, create and send a UDP response packet to the
+        originator of the initiator packet at the originating port.
+
+        A UDP initiator packet is denoted by the initiator_string being it's only payload
+        """
         # create a packet
         # send it back to the originator of this packet
 
@@ -72,6 +86,13 @@ def send_and_listen(
         protocol=None,
         timeout=0):
 
+    """
+    Craft and send an initiator packet of type 'protocol' to the given 'destination_ip' at
+    'destination_port'.
+    Once sent, method will listen for a response for 'timeout' seconds (0 == Indefinitely).
+    If a response packet is detected, response packet is returned.
+    """
+
     resp = None
     if protocol == 'tcp':
         resp = sr(
@@ -103,11 +124,16 @@ def listen(
         timeout=None,
         bpf_override=None):
     """
+    Uses scapy lib's sniff() method to filter packets across all interfaces.  Sniff() will run the
+    'reaction' method when a sniffed packet matches the given parameters:
+    destination port, interface, or protocol.
+
     bpf_override is a string that adheres to the Berkeley Packet Filter syntax
     (http://biot.com/capstats/bpf.html)
     default bpf is 'ip dst port {port}'
     """
 
+    timeout = None if timeout == 0 else timeout
     interface_str = "on {0}".format(interface) if interface else ""
     proto_str = "{0}".format(protocol) if protocol else ""
     port_str = "dst port {0}".format(port) if port else ""

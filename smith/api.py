@@ -3,6 +3,11 @@ import argparse
 PROTOCOLS = ['udp', 'tcp', 'rest']
 
 def ping(port, destination, protocol, timeout=10):
+    """
+    Send a request appropriate for the requested protocol to destination at port.
+    Listen for timeout seconds for a well-known response.
+    """
+
     resp = None
     if protocol == "rest":
         import wsgiref_wrapper
@@ -23,7 +28,11 @@ def ping(port, destination, protocol, timeout=10):
             return False
 
 
-def listen(port, protocol, timeout=None):
+def listen(port, protocol, timeout=3600):
+    """
+    Initiate a listener for the given protocol that will listen for timeout seconds.
+    """
+
     if protocol == 'tcp':
         import scapy_wrapper
         scapy_wrapper.listen(
