@@ -50,10 +50,11 @@ positional arguments:
                   raw sockets which will bypass IPTABLES rules.
 
 optional arguments:
+ '-t', '--timeout'Seconds to wait for request from client before giving up. Zero (default) means 'wait forever'
   -h, --help      show this help message and exit
 ```
 
 ### Example
 ```bash
-$: smith ping 12345 127.0.0.1 REST --timeout 10
+$: smith listen 12345 REST --timeout 60
 ```
